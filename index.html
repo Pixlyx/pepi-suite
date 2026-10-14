@@ -1,0 +1,219 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>html{color-scheme:light}body{margin:0}</style>
+<title>Applis Pépinière</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=Instrument+Sans:wght@400;500;600&display=swap">
+<style>
+  /* Layout: en-tête sobre puis une rangée de trois étiquettes de pépinière, la troisième grisée. */
+  :root {
+    --bg: #eef1ec;
+    --surface: #fbfcfa;
+    --fg: #1b2a21;
+    --muted: #5b6b61;
+    --accent: #2c6a3f;
+    --accent-soft: #dfeadf;
+    --line: #cfd8cf;
+    --off-bg: #e4e8e3;
+    --off-fg: #85918a;
+    --font-display: "Bricolage Grotesque", "Trebuchet MS", system-ui, sans-serif;
+    --font-body: "Instrument Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #111915;
+      --surface: #1a251f;
+      --fg: #e5ede6;
+      --muted: #9aaa9f;
+      --accent: #84c895;
+      --accent-soft: #24362b;
+      --line: #2d3c33;
+      --off-bg: #161f1a;
+      --off-fg: #6c7a71;
+      color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #111915;
+    --surface: #1a251f;
+    --fg: #e5ede6;
+    --muted: #9aaa9f;
+    --accent: #84c895;
+    --accent-soft: #24362b;
+    --line: #2d3c33;
+    --off-bg: #161f1a;
+    --off-fg: #6c7a71;
+    color-scheme: dark;
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    background: var(--bg);
+    color: var(--fg);
+    font-family: var(--font-body);
+    font-size: 16px;
+    line-height: 1.5;
+    padding-block: 56px 48px;
+    padding-left: max(16px, env(safe-area-inset-left, 0px));
+    padding-right: max(16px, env(safe-area-inset-right, 0px));
+  }
+  .wrap { max-width: 920px; margin: 0 auto; }
+
+  header { margin-bottom: 40px; }
+  .eyebrow {
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin: 0 0 10px;
+  }
+  h1 {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: clamp(2rem, 6vw, 3.1rem);
+    line-height: 1.05;
+    letter-spacing: -0.02em;
+    margin: 0 0 12px;
+    text-wrap: balance;
+  }
+  .lead { color: var(--muted); max-width: 52ch; margin: 0; }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 16px;
+  }
+
+  .tile {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    min-width: 0;
+    padding: 22px 22px 20px;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    color: inherit;
+    text-decoration: none;
+    position: relative;
+    transition: transform 0.15s ease, border-color 0.15s ease;
+  }
+  a.tile:hover { transform: translateY(-3px); border-color: var(--accent); }
+  a.tile:focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; }
+
+  /* Petit trou d'étiquette en haut à droite */
+  .tile::after {
+    content: "";
+    position: absolute;
+    top: 14px;
+    right: 14px;
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background: var(--bg);
+    border: 1px solid var(--line);
+  }
+
+  .icon {
+    width: 48px;
+    height: 48px;
+    display: grid;
+    place-items: center;
+    border-radius: 50%;
+    background: var(--accent-soft);
+    color: var(--accent);
+  }
+  .icon svg { width: 26px; height: 26px; }
+
+  .tile h2 {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 1.35rem;
+    line-height: 1.15;
+    letter-spacing: -0.01em;
+    margin: 0;
+  }
+  .tile p { margin: 0; color: var(--muted); font-size: 0.95rem; }
+
+  .action {
+    margin-top: auto;
+    padding-top: 6px;
+    font-weight: 600;
+    font-size: 0.95rem;
+    color: var(--accent);
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .action svg { width: 16px; height: 16px; transition: transform 0.15s ease; }
+  a.tile:hover .action svg { transform: translateX(3px); }
+
+  /* Appli pas encore disponible */
+  .tile.off {
+    background: var(--off-bg);
+    border-style: dashed;
+    cursor: not-allowed;
+    user-select: none;
+  }
+  .tile.off h2, .tile.off p { color: var(--off-fg); }
+  .tile.off .icon { background: transparent; color: var(--off-fg); border: 1px dashed var(--off-fg); }
+  .tile.off .action { color: var(--off-fg); font-weight: 500; }
+
+  footer { margin-top: 32px; color: var(--muted); font-size: 0.85rem; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .tile, .action svg { transition: none; }
+    a.tile:hover { transform: none; }
+  }
+</style>
+
+<div class="wrap">
+  <header>
+    <p class="eyebrow">Pépinière</p>
+    <h1>Mes applis de pépinière</h1>
+    <p class="lead">Les outils de l'activité au même endroit : arrachage, suivi des cultures et inventaire.</p>
+  </header>
+
+  <main class="grid">
+    <a class="tile" href="https://pixlyx.github.io/pepi-arrachage-app/" target="_blank" rel="noopener">
+      <span class="icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v9"/><path d="M8 3h8"/><path d="M9 12h6l-1 8a2 2 0 0 1-4 0z"/></svg>
+      </span>
+      <h2>Arrachage</h2>
+      <p>Gérer les arrachages de la pépinière.</p>
+      <span class="action">Ouvrir
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg>
+      </span>
+    </a>
+
+    <a class="tile" href="https://pixlyx.github.io/pepi-suivi-app/" target="_blank" rel="noopener">
+      <span class="icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21v-9"/><path d="M12 12c0-4 2.5-6 7-6 0 4-2.5 6-7 6z"/><path d="M12 15c0-3-2-5-6-5 0 3 2 5 6 5z"/></svg>
+      </span>
+      <h2>Suivi des cultures</h2>
+      <p>Suivre l'avancement des cultures.</p>
+      <span class="action">Ouvrir
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg>
+      </span>
+    </a>
+
+    <!-- Inventaire : remplacer ce <div> par <a class="tile" href="LIEN" target="_blank" rel="noopener"> et retirer la classe "off" quand le lien est prêt -->
+    <div class="tile off" aria-disabled="true" role="link" tabindex="-1">
+      <span class="icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8l9-4 9 4-9 4z"/><path d="M3 8v8l9 4 9-4V8"/><path d="M12 12v8"/></svg>
+      </span>
+      <h2>Inventaire</h2>
+      <p>Tenir l'inventaire du stock.</p>
+      <span class="action">Bientôt disponible</span>
+    </div>
+  </main>
+
+  <footer>L'inventaire s'activera dès que son lien sera ajouté.</footer>
+</div>
+
+</body>
+</html>
